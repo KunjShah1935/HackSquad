@@ -13,6 +13,7 @@ interface QuestionDetailPageProps {
   onSubmitAnswer: (questionId: string, content: string) => void;
   onHomeClick: () => void;
   onLoginClick: () => void;
+  onLogoutClick?: () => void;
   isDark: boolean;
   onThemeToggle: () => void;
 }
@@ -25,6 +26,7 @@ export const QuestionDetailPage: React.FC<QuestionDetailPageProps> = ({
   onSubmitAnswer,
   onHomeClick,
   onLoginClick,
+  onLogoutClick,
   isDark,
   onThemeToggle,
 }) => {
@@ -63,6 +65,7 @@ export const QuestionDetailPage: React.FC<QuestionDetailPageProps> = ({
         filter="newest"
         onFilterChange={() => {}}
         onLoginClick={onLoginClick}
+        onLogoutClick={onLogoutClick}
         onAskQuestionClick={() => {}}
         onHomeClick={onHomeClick}
         showFilters={false}

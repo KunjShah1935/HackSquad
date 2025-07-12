@@ -18,6 +18,7 @@ interface HomePageProps {
   onPageChange: (page: number) => void;
   onQuestionClick: (question: Question) => void;
   onLoginClick: () => void;
+  onLogoutClick?: () => void;
   onAskQuestionClick: () => void;
   onHomeClick: () => void;
   isDark: boolean;
@@ -36,6 +37,7 @@ export const HomePage: React.FC<HomePageProps> = ({
   onPageChange,
   onQuestionClick,
   onLoginClick,
+  onLogoutClick,
   onAskQuestionClick,
   onHomeClick,
   isDark,
@@ -57,6 +59,7 @@ export const HomePage: React.FC<HomePageProps> = ({
         filter={filter}
         onFilterChange={onFilterChange}
         onLoginClick={onLoginClick}
+        onLogoutClick={onLogoutClick}
         onAskQuestionClick={onAskQuestionClick}
         onHomeClick={onHomeClick}
         isDark={isDark}
