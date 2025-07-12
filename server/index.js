@@ -41,9 +41,14 @@ const connectDB = async () => {
     const mongoURI = process.env.MONGODB_URI || 'mongodb://localhost:27017/stackit';
     await mongoose.connect(mongoURI);
     console.log('MongoDB connected successfully');
+    return true;
   } catch (error) {
-    console.error('MongoDB connection error:', error);
-    process.exit(1);
+    console.error('MongoDB connection error:', error.message);
+    console.log('⚠️  Running in demo mode without MongoDB');
+    console.log('💡 To use full functionality, install and start MongoDB:');
+    console.log('   - Install MongoDB: https://docs.mongodb.com/manual/installation/');
+    console.log('   - Start MongoDB: mongod');
+    return false;
   }
 };
 
@@ -57,7 +62,36 @@ app.use('/api/stats', statsRoutes);
 
 // Health check endpoint
 app.get('/api/health', (req, res) => {
-  res.json({ status: 'OK', timestamp: new Date().toISOString() });
+  res.json({ 
+    status: 'OK', 
+    timestamp: new Date().toISOString(),
+    environment: process.env.NODE_ENV || 'development',
+    mongodb: mongoose.connection.readyState === 1 ? 'connected' : 'disconnected'
+  });
+});
+
+// Demo mode endpoint
+app.get('/api/demo', (req, res) => {
+  res.json({
+    message: 'Backend API is running in demo mode',
+    features: [
+      'Authentication with JWT tokens',
+      'Question and Answer CRUD operations',
+      'Voting system with reputation tracking',
+      'Notification system',
+      'User statistics and analytics',
+      'Search and filtering capabilities'
+    ],
+    endpoints: {
+      auth: '/api/auth/*',
+      questions: '/api/questions/*',
+      answers: '/api/answers/*',
+      users: '/api/users/*',
+      notifications: '/api/notifications/*',
+      stats: '/api/stats/*'
+    },
+    note: 'Full functionality requires MongoDB connection'
+  });
 });
 
 // Error handling middleware
@@ -75,10 +109,19 @@ app.use('*', (req, res) => {
 });
 
 // Start server
-connectDB().then(() => {
+connectDB().then((mongoConnected) => {
   app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
-    console.log(`Environment: ${process.env.NODE_ENV || 'development'}`);
+    console.log(`🚀 Server running on port ${PORT}`);
+    console.log(`🌍 Environment: ${process.env.NODE_ENV || 'development'}`);
+    console.log(`📡 Health check: http://localhost:${PORT}/api/health`);
+    console.log(`🎯 Demo endpoint: http://localhost:${PORT}/api/demo`);
+    
+    if (mongoConnected) {
+      console.log('✅ MongoDB connected - Full functionality available');
+    } else {
+      console.log('⚠️  MongoDB not connected - Limited functionality');
+      console.log('💡 Install MongoDB for full features');
+    }
   });
 });
 
