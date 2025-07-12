@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Search, Menu, X, User, LogIn, Plus, Sparkles } from 'lucide-react';
+import { Search, Menu, X, User, LogIn, LogOut, Plus, Sparkles } from 'lucide-react';
 import { User as UserType, FilterType } from '../types';
 import { NotificationDropdown } from './NotificationDropdown';
 import { ThemeToggle } from './ThemeToggle';
@@ -11,6 +11,7 @@ interface HeaderProps {
   filter: FilterType;
   onFilterChange: (filter: FilterType) => void;
   onLoginClick: () => void;
+  onLogoutClick?: () => void;
   onAskQuestionClick: () => void;
   onHomeClick: () => void;
   showFilters?: boolean;
@@ -25,6 +26,7 @@ export const Header: React.FC<HeaderProps> = ({
   filter,
   onFilterChange,
   onLoginClick,
+  onLogoutClick,
   onAskQuestionClick,
   onHomeClick,
   showFilters = true,
@@ -143,19 +145,37 @@ export const Header: React.FC<HeaderProps> = ({
             <NotificationDropdown currentUser={currentUser} isDark={isDark} />
 
             {currentUser ? (
-              <div className={`
-                flex items-center space-x-3 px-3 py-2 rounded-xl transition-all duration-300 transform hover:scale-105
-                ${isDark ? 'bg-gray-800 border border-gray-700' : 'bg-gray-50 border border-gray-200'}
-                shadow-sm hover:shadow-md
-              `}>
-                <img
-                  src={currentUser.avatar}
-                  alt={currentUser.username}
-                  className="w-8 h-8 rounded-full border-2 border-current opacity-80"
-                />
-                <span className={`text-sm font-medium ${isDark ? 'text-gray-200' : 'text-gray-700'}`}>
-                  {currentUser.username}
-                </span>
+              <div className="flex items-center space-x-2">
+                <div className={`
+                  flex items-center space-x-3 px-3 py-2 rounded-xl transition-all duration-300 transform hover:scale-105
+                  ${isDark ? 'bg-gray-800 border border-gray-700' : 'bg-gray-50 border border-gray-200'}
+                  shadow-sm hover:shadow-md
+                `}>
+                  <img
+                    src={currentUser.avatar}
+                    alt={currentUser.username}
+                    className="w-8 h-8 rounded-full border-2 border-current opacity-80"
+                  />
+                  <span className={`text-sm font-medium ${isDark ? 'text-gray-200' : 'text-gray-700'}`}>
+                    {currentUser.username}
+                  </span>
+                </div>
+                {onLogoutClick && (
+                  <button
+                    onClick={onLogoutClick}
+                    className={`
+                      flex items-center space-x-2 px-3 py-2 rounded-xl transition-all duration-300 transform hover:scale-105 shadow-sm
+                      ${isDark 
+                        ? 'bg-red-600 hover:bg-red-500 text-white' 
+                        : 'bg-red-600 hover:bg-red-500 text-white'
+                      }
+                      font-medium text-sm
+                    `}
+                  >
+                    <LogOut className="w-4 h-4" />
+                    <span>Logout</span>
+                  </button>
+                )}
               </div>
             ) : (
               <button
@@ -281,19 +301,37 @@ export const Header: React.FC<HeaderProps> = ({
               </div>
 
               {currentUser ? (
-                <div className={`
-                  flex items-center space-x-3 p-3 rounded-xl transition-all duration-300
-                  ${isDark ? 'bg-gray-800 border border-gray-700' : 'bg-gray-50 border border-gray-200'}
-                  shadow-sm
-                `}>
-                  <img
-                    src={currentUser.avatar}
-                    alt={currentUser.username}
-                    className="w-8 h-8 rounded-full border-2 border-current opacity-80"
-                  />
-                  <span className={`text-sm font-medium ${isDark ? 'text-gray-200' : 'text-gray-700'}`}>
-                    {currentUser.username}
-                  </span>
+                <div className="space-y-3">
+                  <div className={`
+                    flex items-center space-x-3 p-3 rounded-xl transition-all duration-300
+                    ${isDark ? 'bg-gray-800 border border-gray-700' : 'bg-gray-50 border border-gray-200'}
+                    shadow-sm
+                  `}>
+                    <img
+                      src={currentUser.avatar}
+                      alt={currentUser.username}
+                      className="w-8 h-8 rounded-full border-2 border-current opacity-80"
+                    />
+                    <span className={`text-sm font-medium ${isDark ? 'text-gray-200' : 'text-gray-700'}`}>
+                      {currentUser.username}
+                    </span>
+                  </div>
+                  {onLogoutClick && (
+                    <button
+                      onClick={onLogoutClick}
+                      className={`
+                        w-full flex items-center justify-center space-x-2 px-4 py-3 rounded-xl transition-all duration-300 transform active:scale-95 shadow-sm
+                        ${isDark 
+                          ? 'bg-red-600 hover:bg-red-500 text-white' 
+                          : 'bg-red-600 hover:bg-red-500 text-white'
+                        }
+                        font-medium text-sm
+                      `}
+                    >
+                      <LogOut className="w-4 h-4" />
+                      <span>Logout</span>
+                    </button>
+                  )}
                 </div>
               ) : (
                 <button

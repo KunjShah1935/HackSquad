@@ -3,24 +3,27 @@ import { HomePage } from './components/HomePage';
 import { AskQuestionPage } from './components/AskQuestionPage';
 import { QuestionDetailPage } from './components/QuestionDetailPage';
 import { FloatingActionButton } from './components/FloatingActionButton';
+import { AuthModal } from './components/AuthModal';
 import { mockQuestions, mockUsers } from './data/mockData';
 import { Question, User, FilterType, Answer } from './types';
 import { useNotifications } from './hooks/useNotifications';
 import { useTheme } from './hooks/useTheme';
+import { useAuth } from './hooks/useAuth';
 import { db } from './lib/database';
 
 type Page = 'home' | 'ask' | 'question';
 
 function App() {
   const [currentPage, setCurrentPage] = useState<Page>('home');
-  const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [questions, setQuestions] = useState<Question[]>(mockQuestions);
   const [selectedQuestion, setSelectedQuestion] = useState<Question | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [filter, setFilter] = useState<FilterType>('newest');
   const [pageNumber, setPageNumber] = useState(1);
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
 
   const { isDark, toggleTheme } = useTheme();
+  const { user: currentUser, isAuthenticated, login, logout } = useAuth();
 
   const {
     notifyQuestionAnswered,
@@ -96,8 +99,16 @@ function App() {
   );
 
   const handleLogin = () => {
-    // Simulate login - in a real app, this would handle authentication
-    setCurrentUser(mockUsers[0]);
+    setIsAuthModalOpen(true);
+  };
+
+  const handleAuthSuccess = (user: User) => {
+    login(user);
+    setIsAuthModalOpen(false);
+  };
+
+  const handleLogout = async () => {
+    await logout();
   };
 
   const handleAskQuestion = () => {
@@ -290,14 +301,15 @@ function App() {
     return (
       <div className={isDark ? 'dark' : ''}>
         <div className={`min-h-screen transition-colors duration-300 ${isDark ? 'bg-gray-900' : 'bg-gray-50'}`}>
-          <AskQuestionPage
-            currentUser={currentUser}
-            onSubmit={handleSubmitQuestion}
-            onHomeClick={handleHomeClick}
-            onLoginClick={handleLogin}
-            isDark={isDark}
-            onThemeToggle={toggleTheme}
-          />
+                  <AskQuestionPage
+          currentUser={currentUser}
+          onSubmit={handleSubmitQuestion}
+          onHomeClick={handleHomeClick}
+          onLoginClick={handleLogin}
+          onLogoutClick={currentUser ? handleLogout : undefined}
+          isDark={isDark}
+          onThemeToggle={toggleTheme}
+        />
         </div>
       </div>
     );
@@ -307,17 +319,18 @@ function App() {
     return (
       <div className={isDark ? 'dark' : ''}>
         <div className={`min-h-screen transition-colors duration-300 ${isDark ? 'bg-gray-900' : 'bg-gray-50'}`}>
-          <QuestionDetailPage
-            question={selectedQuestion}
-            currentUser={currentUser}
-            onVoteQuestion={handleVoteQuestion}
-            onVoteAnswer={handleVoteAnswer}
-            onSubmitAnswer={handleSubmitAnswer}
-            onHomeClick={handleHomeClick}
-            onLoginClick={handleLogin}
-            isDark={isDark}
-            onThemeToggle={toggleTheme}
-          />
+                  <QuestionDetailPage
+          question={selectedQuestion}
+          currentUser={currentUser}
+          onVoteQuestion={handleVoteQuestion}
+          onVoteAnswer={handleVoteAnswer}
+          onSubmitAnswer={handleSubmitAnswer}
+          onHomeClick={handleHomeClick}
+          onLoginClick={handleLogin}
+          onLogoutClick={currentUser ? handleLogout : undefined}
+          isDark={isDark}
+          onThemeToggle={toggleTheme}
+        />
         </div>
       </div>
     );
@@ -338,6 +351,7 @@ function App() {
           onPageChange={handlePageChange}
           onQuestionClick={handleQuestionClick}
           onLoginClick={handleLogin}
+          onLogoutClick={currentUser ? handleLogout : undefined}
           onAskQuestionClick={handleAskQuestion}
           onHomeClick={handleHomeClick}
           isDark={isDark}
@@ -346,6 +360,13 @@ function App() {
         
         <FloatingActionButton 
           onAskQuestion={handleAskQuestion}
+          isDark={isDark}
+        />
+        
+        <AuthModal
+          isOpen={isAuthModalOpen}
+          onClose={() => setIsAuthModalOpen(false)}
+          onLogin={handleAuthSuccess}
           isDark={isDark}
         />
       </div>

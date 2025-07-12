@@ -9,6 +9,7 @@ interface AskQuestionPageProps {
   onSubmit: (title: string, description: string, tags: string[]) => void;
   onHomeClick: () => void;
   onLoginClick: () => void;
+  onLogoutClick?: () => void;
   isDark: boolean;
   onThemeToggle: () => void;
 }
@@ -18,6 +19,7 @@ export const AskQuestionPage: React.FC<AskQuestionPageProps> = ({
   onSubmit,
   onHomeClick,
   onLoginClick,
+  onLogoutClick,
   isDark,
   onThemeToggle,
 }) => {
@@ -63,6 +65,7 @@ export const AskQuestionPage: React.FC<AskQuestionPageProps> = ({
         filter="newest"
         onFilterChange={() => {}}
         onLoginClick={onLoginClick}
+        onLogoutClick={onLogoutClick}
         onAskQuestionClick={() => {}}
         onHomeClick={onHomeClick}
         showFilters={false}
